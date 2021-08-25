@@ -1,0 +1,14 @@
+build/
+subprojects/
+*.o
+*.so
+*.dylib
+*.a
+*.p
+compile_commands.json
+.DS_Store
+*.log
+*.pcap
+*.ts
+*.m3u8
+*.mp4
