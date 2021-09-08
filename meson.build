@@ -69,6 +69,25 @@ solas_crypto_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, crypto_lib, ssl_lib, solas_core_dep]
 )
 
+# STUN library
+stun_sources = files(
+  'src/protocol/stun/stun_types.vala',
+  'src/protocol/stun/stun_attribute.vala',
+  'src/protocol/stun/stun_message.vala'
+)
+
+solas_stun_lib = static_library('solas_stun',
+  stun_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep],
+  include_directories: solas_inc
+)
+
+solas_stun_dep = declare_dependency(
+  link_with: solas_stun_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -85,3 +104,11 @@ test_crypto_exe = executable('test_crypto',
   include_directories: solas_inc
 )
 test('test_crypto', test_crypto_exe)
+
+# Test STUN
+test_stun_exe = executable('test_stun',
+  'tests/test_stun.vala',
+  dependencies: [solas_stun_dep],
+  include_directories: solas_inc
+)
+test('test_stun', test_stun_exe)
