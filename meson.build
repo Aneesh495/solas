@@ -88,6 +88,27 @@ solas_stun_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
 )
 
+# SDP library
+sdp_sources = files(
+  'src/protocol/sdp/sdp_types.vala',
+  'src/protocol/sdp/sdp_models.vala',
+  'src/protocol/sdp/sdp_parser.vala',
+  'src/protocol/sdp/sdp_serializer.vala',
+  'src/protocol/sdp/sdp_negotiator.vala'
+)
+
+solas_sdp_lib = static_library('solas_sdp',
+  sdp_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+
+solas_sdp_dep = declare_dependency(
+  link_with: solas_sdp_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -112,3 +133,11 @@ test_stun_exe = executable('test_stun',
   include_directories: solas_inc
 )
 test('test_stun', test_stun_exe)
+
+# Test SDP
+test_sdp_exe = executable('test_sdp',
+  'tests/test_sdp.vala',
+  dependencies: [solas_sdp_dep],
+  include_directories: solas_inc
+)
+test('test_sdp', test_sdp_exe)
