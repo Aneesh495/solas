@@ -109,6 +109,25 @@ solas_sdp_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
 )
 
+# RTP library
+rtp_sources = files(
+  'src/protocol/rtp/rtp_extension.vala',
+  'src/protocol/rtp/rtp_packet.vala',
+  'src/protocol/rtp/sequence_unwrapper.vala'
+)
+
+solas_rtp_lib = static_library('solas_rtp',
+  rtp_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+
+solas_rtp_dep = declare_dependency(
+  link_with: solas_rtp_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -141,3 +160,11 @@ test_sdp_exe = executable('test_sdp',
   include_directories: solas_inc
 )
 test('test_sdp', test_sdp_exe)
+
+# Test RTP
+test_rtp_exe = executable('test_rtp',
+  'tests/test_rtp.vala',
+  dependencies: [solas_rtp_dep],
+  include_directories: solas_inc
+)
+test('test_rtp', test_rtp_exe)
