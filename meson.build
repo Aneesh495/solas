@@ -128,6 +128,30 @@ solas_rtp_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
 )
 
+# RTCP library
+rtcp_sources = files(
+  'src/protocol/rtcp/rtcp_types.vala',
+  'src/protocol/rtcp/rtcp_packet.vala',
+  'src/protocol/rtcp/sender_report.vala',
+  'src/protocol/rtcp/receiver_report.vala',
+  'src/protocol/rtcp/feedback_nack.vala',
+  'src/protocol/rtcp/feedback_pli_fir.vala',
+  'src/protocol/rtcp/feedback_remb.vala',
+  'src/protocol/rtcp/feedback_twcc.vala'
+)
+
+solas_rtcp_lib = static_library('solas_rtcp',
+  rtcp_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+
+solas_rtcp_dep = declare_dependency(
+  link_with: solas_rtcp_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -168,3 +192,11 @@ test_rtp_exe = executable('test_rtp',
   include_directories: solas_inc
 )
 test('test_rtp', test_rtp_exe)
+
+# Test RTCP
+test_rtcp_exe = executable('test_rtcp',
+  'tests/test_rtcp.vala',
+  dependencies: [solas_rtcp_dep],
+  include_directories: solas_inc
+)
+test('test_rtcp', test_rtcp_exe)
