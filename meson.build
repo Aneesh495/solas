@@ -152,6 +152,25 @@ solas_rtcp_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
 )
 
+# SRTP library
+srtp_sources = files(
+  'src/protocol/srtp/replay_window.vala',
+  'src/protocol/srtp/srtp_context.vala',
+  'src/protocol/srtp/srtp_session.vala'
+)
+
+solas_srtp_lib = static_library('solas_srtp',
+  srtp_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep, solas_rtp_dep, solas_rtcp_dep],
+  include_directories: solas_inc
+)
+
+solas_srtp_dep = declare_dependency(
+  link_with: solas_srtp_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep, solas_rtp_dep, solas_rtcp_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -200,3 +219,11 @@ test_rtcp_exe = executable('test_rtcp',
   include_directories: solas_inc
 )
 test('test_rtcp', test_rtcp_exe)
+
+# Test SRTP
+test_srtp_exe = executable('test_srtp',
+  'tests/test_srtp.vala',
+  dependencies: [solas_srtp_dep],
+  include_directories: solas_inc
+)
+test('test_srtp', test_srtp_exe)
