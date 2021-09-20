@@ -171,6 +171,27 @@ solas_srtp_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep, solas_rtp_dep, solas_rtcp_dep]
 )
 
+# Media library
+media_sources = files(
+  'src/media/codec_types.vala',
+  'src/media/depacketizer.vala',
+  'src/media/depacketizer_vp8.vala',
+  'src/media/depacketizer_h264.vala',
+  'src/media/depacketizer_opus.vala'
+)
+
+solas_media_lib = static_library('solas_media',
+  media_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep],
+  include_directories: solas_inc
+)
+
+solas_media_dep = declare_dependency(
+  link_with: solas_media_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -227,3 +248,11 @@ test_srtp_exe = executable('test_srtp',
   include_directories: solas_inc
 )
 test('test_srtp', test_srtp_exe)
+
+# Test Media
+test_media_exe = executable('test_media',
+  'tests/test_media.vala',
+  dependencies: [solas_media_dep],
+  include_directories: solas_inc
+)
+test('test_media', test_media_exe)
