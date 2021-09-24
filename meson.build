@@ -192,6 +192,26 @@ solas_media_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep]
 )
 
+# Jitter library
+jitter_sources = files(
+  'src/engine/jitter/packet_buffer.vala',
+  'src/engine/jitter/playout_delay.vala',
+  'src/engine/jitter/nack_queue.vala',
+  'src/engine/jitter/frame_assembler.vala'
+)
+
+solas_jitter_lib = static_library('solas_jitter',
+  jitter_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep],
+  include_directories: solas_inc
+)
+
+solas_jitter_dep = declare_dependency(
+  link_with: solas_jitter_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -256,3 +276,11 @@ test_media_exe = executable('test_media',
   include_directories: solas_inc
 )
 test('test_media', test_media_exe)
+
+# Test Jitter
+test_jitter_exe = executable('test_jitter',
+  'tests/test_jitter.vala',
+  dependencies: [solas_jitter_dep],
+  include_directories: solas_inc
+)
+test('test_jitter', test_jitter_exe)
