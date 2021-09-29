@@ -212,6 +212,27 @@ solas_jitter_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep]
 )
 
+# Congestion Control library
+congestion_sources = files(
+  'src/engine/congestion/trendline_estimator.vala',
+  'src/engine/congestion/aimd_rate_controller.vala',
+  'src/engine/congestion/loss_controller.vala',
+  'src/engine/congestion/bandwidth_estimator.vala',
+  'src/engine/congestion/pacer.vala'
+)
+
+solas_congestion_lib = static_library('solas_congestion',
+  congestion_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep],
+  include_directories: solas_inc
+)
+
+solas_congestion_dep = declare_dependency(
+  link_with: solas_congestion_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -284,3 +305,11 @@ test_jitter_exe = executable('test_jitter',
   include_directories: solas_inc
 )
 test('test_jitter', test_jitter_exe)
+
+# Test Congestion
+test_congestion_exe = executable('test_congestion',
+  'tests/test_congestion.vala',
+  dependencies: [solas_congestion_dep],
+  include_directories: solas_inc
+)
+test('test_congestion', test_congestion_exe)
