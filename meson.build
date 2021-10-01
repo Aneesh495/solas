@@ -233,6 +233,31 @@ solas_congestion_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep, solas_rtcp_dep]
 )
 
+# SFU Core library
+sfu_sources = files(
+  'src/engine/sfu/track.vala',
+  'src/engine/sfu/active_speaker.vala',
+  'src/engine/sfu/simulcast_router.vala',
+  'src/engine/sfu/peer.vala',
+  'src/engine/sfu/room.vala'
+)
+
+solas_sfu_lib = static_library('solas_sfu',
+  sfu_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep,
+                 solas_core_dep, solas_rtp_dep, solas_rtcp_dep, solas_sdp_dep,
+                 solas_media_dep, solas_jitter_dep, solas_congestion_dep],
+  include_directories: solas_inc
+)
+
+solas_sfu_dep = declare_dependency(
+  link_with: solas_sfu_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep,
+                 solas_core_dep, solas_rtp_dep, solas_rtcp_dep, solas_sdp_dep,
+                 solas_media_dep, solas_jitter_dep, solas_congestion_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -313,3 +338,11 @@ test_congestion_exe = executable('test_congestion',
   include_directories: solas_inc
 )
 test('test_congestion', test_congestion_exe)
+
+# Test SFU
+test_sfu_exe = executable('test_sfu',
+  'tests/test_sfu.vala',
+  dependencies: [solas_sfu_dep],
+  include_directories: solas_inc
+)
+test('test_sfu', test_sfu_exe)
