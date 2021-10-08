@@ -277,6 +277,28 @@ solas_distribution_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep]
 )
 
+# Network library
+network_sources = files(
+  'src/network/protocol_demuxer.vala',
+  'src/network/websocket_framing.vala',
+  'src/network/metrics_exporter.vala',
+  'src/network/http_server.vala',
+  'src/network/udp_server.vala'
+)
+
+solas_network_lib = static_library('solas_network',
+  network_sources,
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_crypto_dep, solas_sdp_dep, solas_sfu_dep],
+  include_directories: solas_inc
+)
+
+solas_network_dep = declare_dependency(
+  link_with: solas_network_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_crypto_dep, solas_sdp_dep, solas_sfu_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -373,3 +395,12 @@ test_hls_exe = executable('test_hls',
   include_directories: solas_inc
 )
 test('test_hls', test_hls_exe)
+
+# Test Network
+test_network_exe = executable('test_network',
+  'tests/test_network.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_network_dep, solas_sfu_dep],
+  include_directories: solas_inc
+)
+test('test_network', test_network_exe)
