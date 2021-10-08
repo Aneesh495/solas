@@ -258,6 +258,25 @@ solas_sfu_dep = declare_dependency(
                  solas_media_dep, solas_jitter_dep, solas_congestion_dep]
 )
 
+# Distribution library
+distribution_sources = files(
+  'src/distribution/fmp4_boxes.vala',
+  'src/distribution/segmenter.vala',
+  'src/distribution/hls_playlist.vala'
+)
+
+solas_distribution_lib = static_library('solas_distribution',
+  distribution_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep],
+  include_directories: solas_inc
+)
+
+solas_distribution_dep = declare_dependency(
+  link_with: solas_distribution_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -346,3 +365,11 @@ test_sfu_exe = executable('test_sfu',
   include_directories: solas_inc
 )
 test('test_sfu', test_sfu_exe)
+
+# Test HLS
+test_hls_exe = executable('test_hls',
+  'tests/test_hls.vala',
+  dependencies: [solas_distribution_dep],
+  include_directories: solas_inc
+)
+test('test_hls', test_hls_exe)
