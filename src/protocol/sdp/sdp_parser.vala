@@ -92,6 +92,36 @@ namespace Solas.Protocol.Sdp {
                 return;
             }
 
+            if (attr.has_prefix("ice-ufrag:")) {
+                string ufrag = attr.substring(10).strip();
+                if (current_media != null) {
+                    current_media.ice_ufrag = ufrag;
+                } else {
+                    session.ice_ufrag = ufrag;
+                }
+                return;
+            } else if (attr.has_prefix("ice-pwd:")) {
+                string pwd = attr.substring(8).strip();
+                if (current_media != null) {
+                    current_media.ice_pwd = pwd;
+                } else {
+                    session.ice_pwd = pwd;
+                }
+                return;
+            } else if (attr.has_prefix("fingerprint:")) {
+                string[] fp_parts = attr.substring(12).split(" ");
+                if (fp_parts.length >= 2) {
+                    if (current_media != null) {
+                        current_media.fingerprint_hash = fp_parts[0];
+                        current_media.fingerprint_val = fp_parts[1];
+                    } else {
+                        session.fingerprint_hash = fp_parts[0];
+                        session.fingerprint_val = fp_parts[1];
+                    }
+                }
+                return;
+            }
+
             if (current_media == null) return;
 
             if (attr.has_prefix("mid:")) {

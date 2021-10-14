@@ -299,6 +299,28 @@ solas_network_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_crypto_dep, solas_sdp_dep, solas_sfu_dep]
 )
 
+# Server library
+server_sources = files(
+  'src/server/ice_agent.vala',
+  'src/server/dtls_transport.vala',
+  'src/server/signaling_session.vala'
+)
+
+solas_server_lib = static_library('solas_server',
+  server_sources,
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, json_glib_dep, m_dep,
+                 solas_core_dep, solas_crypto_dep, solas_stun_dep, solas_sdp_dep, solas_sfu_dep, solas_network_dep],
+  include_directories: solas_inc
+)
+
+solas_server_dep = declare_dependency(
+  link_with: solas_server_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, json_glib_dep, m_dep,
+                 solas_core_dep, solas_crypto_dep, solas_stun_dep, solas_sdp_dep, solas_sfu_dep, solas_network_dep]
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -404,3 +426,12 @@ test_network_exe = executable('test_network',
   include_directories: solas_inc
 )
 test('test_network', test_network_exe)
+
+# Test Signaling
+test_signaling_exe = executable('test_signaling',
+  'tests/test_signaling.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_server_dep],
+  include_directories: solas_inc
+)
+test('test_signaling', test_signaling_exe)

@@ -109,6 +109,10 @@ namespace Solas.Protocol.Sdp {
         public string session_version { get; set; }
         public string session_name { get; set; }
         public string connection_address { get; set; }
+        public string ice_ufrag { get; set; }
+        public string ice_pwd { get; set; }
+        public string fingerprint_hash { get; set; }
+        public string fingerprint_val { get; set; }
         public Gee.ArrayList<string> bundle_mids { get; private set; }
         public Gee.ArrayList<MediaDescription> media_sections { get; private set; }
 
@@ -119,6 +123,10 @@ namespace Solas.Protocol.Sdp {
             this.session_version = "1";
             this.session_name = "Solas WebRTC Engine";
             this.connection_address = "0.0.0.0";
+            this.ice_ufrag = "";
+            this.ice_pwd = "";
+            this.fingerprint_hash = "";
+            this.fingerprint_val = "";
             this.bundle_mids = new Gee.ArrayList<string>();
             this.media_sections = new Gee.ArrayList<MediaDescription>();
         }
