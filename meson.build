@@ -301,9 +301,11 @@ solas_network_dep = declare_dependency(
 
 # Server library
 server_sources = files(
+  'src/server/config.vala',
   'src/server/ice_agent.vala',
   'src/server/dtls_transport.vala',
-  'src/server/signaling_session.vala'
+  'src/server/signaling_session.vala',
+  'src/server/server.vala'
 )
 
 solas_server_lib = static_library('solas_server',
@@ -319,6 +321,16 @@ solas_server_dep = declare_dependency(
   include_directories: solas_inc,
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, json_glib_dep, m_dep,
                  solas_core_dep, solas_crypto_dep, solas_stun_dep, solas_sdp_dep, solas_sfu_dep, solas_network_dep]
+)
+
+# Solas Server Executable
+posix_dep = valac.find_library('posix')
+solas_server_exe = executable('solas-server',
+  'src/main.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_server_dep, posix_dep],
+  include_directories: solas_inc,
+  install: true
 )
 
 # Test Core
@@ -435,3 +447,12 @@ test_signaling_exe = executable('test_signaling',
   include_directories: solas_inc
 )
 test('test_signaling', test_signaling_exe)
+
+# Test Server
+test_server_exe = executable('test_server',
+  'tests/test_server.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_server_dep],
+  include_directories: solas_inc
+)
+test('test_server', test_server_exe)
