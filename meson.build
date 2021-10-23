@@ -333,6 +333,34 @@ solas_server_exe = executable('solas-server',
   install: true
 )
 
+# CLI Library
+cli_sources = files(
+  'src/cli/cli_args.vala',
+  'src/cli/cli_client.vala'
+)
+
+solas_cli_lib = static_library('solas_cli',
+  cli_sources,
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, json_glib_dep, m_dep, solas_core_dep, solas_stun_dep],
+  include_directories: solas_inc
+)
+
+solas_cli_dep = declare_dependency(
+  link_with: solas_cli_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, json_glib_dep, m_dep, solas_core_dep, solas_stun_dep]
+)
+
+# Solas CLI Executable
+solas_cli_exe = executable('solas-cli',
+  'src/cli/main.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_cli_dep],
+  include_directories: solas_inc,
+  install: true
+)
+
 # Test Core
 test_core_exe = executable('test_core',
   'tests/test_core.vala',
@@ -456,3 +484,11 @@ test_server_exe = executable('test_server',
   include_directories: solas_inc
 )
 test('test_server', test_server_exe)
+
+# Test CLI
+test_cli_exe = executable('test_cli',
+  'tests/test_cli.vala',
+  dependencies: [solas_cli_dep],
+  include_directories: solas_inc
+)
+test('test_cli', test_cli_exe)
