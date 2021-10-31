@@ -282,6 +282,7 @@ network_sources = files(
   'src/network/protocol_demuxer.vala',
   'src/network/websocket_framing.vala',
   'src/network/metrics_exporter.vala',
+  'src/network/static_web_assets.vala',
   'src/network/http_server.vala',
   'src/network/udp_server.vala'
 )

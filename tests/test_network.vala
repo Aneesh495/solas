@@ -129,6 +129,29 @@ public class TestNetwork : Object {
         var resp_unknown = router.handle_request(req_unknown);
         assert(resp_unknown.status_code == 404);
 
+        /* Test static console web assets */
+        var req_index = new HttpRequest();
+        req_index.method = "GET";
+        req_index.path = "/";
+        var resp_index = router.handle_request(req_index);
+        assert(resp_index.status_code == 200);
+        assert(resp_index.content_type.contains("text/html"));
+        assert(resp_index.body.contains("Solas"));
+
+        var req_css = new HttpRequest();
+        req_css.method = "GET";
+        req_css.path = "/style.css";
+        var resp_css = router.handle_request(req_css);
+        assert(resp_css.status_code == 200);
+        assert(resp_css.content_type.contains("text/css"));
+
+        var req_js = new HttpRequest();
+        req_js.method = "GET";
+        req_js.path = "/app.js";
+        var resp_js = router.handle_request(req_js);
+        assert(resp_js.status_code == 200);
+        assert(resp_js.content_type.contains("javascript"));
+
         /* Serialize HTTP response */
         string serialized = resp_health.serialize();
         assert(serialized.has_prefix("HTTP/1.1 200 OK\r\n"));

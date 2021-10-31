@@ -128,6 +128,12 @@ namespace Solas.Network {
                 return new HttpResponse(200, "application/json", sb.str);
             }
 
+            /* Static console web assets */
+            var web_asset = StaticWebAssets.resolve_asset(req.path);
+            if (web_asset != null) {
+                return web_asset;
+            }
+
             return new HttpResponse(404, "application/json", "{\"error\":\"Not Found\"}");
         }
     }

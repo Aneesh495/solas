@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solas WebRTC SFU Console</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="logo-mark">S</div>
+      <div>
+        <h1 class="logo-title">Solas</h1>
+        <p class="logo-subtitle">Real-Time WebRTC Media Engine</p>
+      </div>
+    </div>
+    <div class="nav-status">
+      <span class="status-indicator"></span>
+      <span id="server-status">Connecting...</span>
+      <span class="badge" id="uptime-badge">Uptime: 0s</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Active Rooms</div>
+        <div class="metric-value" id="val-rooms">0</div>
+        <div class="metric-sub">Multi-party topologies</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Connected Peers</div>
+        <div class="metric-value" id="val-peers">0</div>
+        <div class="metric-sub">Subscribers and publishers</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Ingress Throughput</div>
+        <div class="metric-value" id="val-bitrate">0.00 <span class="unit">kbps</span></div>
+        <div class="metric-sub">Bandwidth utilization</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Packets Routed</div>
+        <div class="metric-value" id="val-packets">0</div>
+        <div class="metric-sub">Zero-copy forwarding</div>
+      </div>
+    </section>
+
+    <div class="content-split">
+      <section class="panel main-panel">
+        <div class="panel-header">
+          <h2>Active Conference Rooms</h2>
+          <button class="btn btn-primary" onclick="refreshRooms()">Refresh</button>
+        </div>
+        <div id="rooms-container" class="rooms-grid">
+          <div class="empty-state">No active rooms found. Connect peers via WebRTC signaling.</div>
+        </div>
+      </section>
+
+      <section class="panel side-panel">
+        <div class="panel-header">
+          <h2>Live Telemetry Monitor</h2>
+          <span class="badge badge-accent">60 Hz</span>
+        </div>
+        <canvas id="throughput-chart" width="400" height="220"></canvas>
+        <div class="telemetry-log" id="telemetry-log">
+          <div class="log-line">[SYS] Solas telemetry engine initialized.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
