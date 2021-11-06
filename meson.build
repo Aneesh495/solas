@@ -177,7 +177,8 @@ media_sources = files(
   'src/media/depacketizer.vala',
   'src/media/depacketizer_vp8.vala',
   'src/media/depacketizer_h264.vala',
-  'src/media/depacketizer_opus.vala'
+  'src/media/depacketizer_opus.vala',
+  'src/media/depacketizer_av1.vala'
 )
 
 solas_media_lib = static_library('solas_media',

@@ -91,10 +91,51 @@ void test_opus_depacketizer() {
     assert(energy <= 0.0 && energy >= -127.0);
 }
 
+void test_av1_depacketizer() {
+    var depack = new Av1Depacketizer();
+
+    /* 1. Sequence Header OBU (Type 1): (Type 1 << 3) = 0x08.
+     * Aggregation header: W=0, N=1 => 0x08 */
+    var pkt_seq = new RtpPacket();
+    pkt_seq.payload = {
+        0x08,       /* Aggregation header: W=0, N=1 */
+        0x08,       /* OBU Header: type=1 (SEQUENCE_HEADER), ext=0 */
+        0xAA, 0xBB  /* OBU payload */
+    };
+
+    assert(depack.is_keyframe(pkt_seq));
+    assert(depack.new_coded_video_sequence);
+    assert(depack.obus.size == 1);
+    assert(depack.obus.get(0).obu_type == Av1ObuType.SEQUENCE_HEADER);
+
+    /* 2. Frame OBU (Type 6): (Type 6 << 3) | Ext(4) = 0x34.
+     * Ext byte: TID=2 (2<<5 = 0x40), SID=1 (1<<3 = 0x08) => 0x48.
+     * Aggregation header: W=0 => 0x00 */
+    var pkt_frame = new RtpPacket();
+    pkt_frame.payload = {
+        0x00,             /* Aggregation header: W=0 */
+        0x34,             /* OBU Header: type=6 (FRAME), ext=1 */
+        0x48,             /* Ext header: TID=2, SID=1 */
+        0x10, 0x20, 0x30  /* OBU payload */
+    };
+
+    assert(!depack.is_keyframe(pkt_frame));
+    assert(depack.parse_rtp_payload(pkt_frame));
+    assert(depack.temporal_id == 2);
+    assert(depack.spatial_id == 1);
+    assert(depack.obus.size == 1);
+    assert(depack.obus.get(0).obu_type == Av1ObuType.FRAME);
+
+    uint8[] payload = depack.extract_payload(pkt_frame);
+    assert(payload.length == 3);
+    assert(payload[0] == 0x10);
+}
+
 void main(string[] args) {
     Test.init(ref args);
     Test.add_func("/solas/media/vp8_depacketizer", test_vp8_depacketizer_keyframe);
     Test.add_func("/solas/media/h264_depacketizer", test_h264_depacketizer);
     Test.add_func("/solas/media/opus_depacketizer", test_opus_depacketizer);
+    Test.add_func("/solas/media/av1_depacketizer", test_av1_depacketizer);
     Test.run();
 }
