@@ -5,6 +5,12 @@
 
 namespace Solas.Media {
 
+    public errordomain MediaError {
+        INVALID_PAYLOAD,
+        UNSUPPORTED_CODEC,
+        UNDERFLOW
+    }
+
     public enum CodecId {
         UNKNOWN = 0,
         OPUS = 1,

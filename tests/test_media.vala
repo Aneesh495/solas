@@ -131,9 +131,68 @@ void test_av1_depacketizer() {
     assert(payload[0] == 0x10);
 }
 
+void test_vp9_depacketizer() {
+    var depack = new DepacketizerVp9();
+
+    /* 1. Keyframe: B=1 (0x08), P=0, SID=0 */
+    var pkt_key = new RtpPacket();
+    pkt_key.payload = { 0x08, 0xDE, 0xAD, 0xBE, 0xEF };
+    assert(depack.is_keyframe(pkt_key));
+
+    /* 2. Inter predicted delta frame: P=1 (0x40) | B=1 (0x08) => 0x48 */
+    var pkt_delta = new RtpPacket();
+    pkt_delta.payload = { 0x48, 0x01, 0x02, 0x03 };
+    assert(!depack.is_keyframe(pkt_delta));
+
+    /* 3. Layer indices + 7-bit Picture ID:
+     * b0: I(0x80) | L(0x20) | B(0x08) => 0xA8
+     * PicID: 0x42 (7-bit, value 66)
+     * Layer byte: TID=2 (0x40) | U=1 (0x10) | SID=1 (0x02) => 0x52
+     */
+    var pkt_layers = new RtpPacket();
+    pkt_layers.payload = { 0xA8, 0x42, 0x52, 0x11, 0x22 };
+    var desc = depack.parse_descriptor(pkt_layers);
+    assert(desc != null);
+    assert(desc.has_picture_id);
+    assert(desc.picture_id == 66);
+    assert(desc.has_layer_indices);
+    assert(desc.temporal_layer_id == 2);
+    assert(desc.spatial_layer_id == 1);
+    assert(desc.is_switching_up_point);
+
+    uint8[] raw_media = depack.extract_payload(pkt_layers);
+    assert(raw_media.length == 2);
+    assert(raw_media[0] == 0x11);
+    assert(raw_media[1] == 0x22);
+
+    /* 4. Scalability Structure (SS):
+     * b0: V(0x02) | B(0x08) => 0x0A
+     * SS octet: N_S=2 (1<<5 = 0x20) | Y=1 (0x10) => 0x30 (2 spatial layers with resolution)
+     * Layer 0: 640x360 (0x0280, 0x0168)
+     * Layer 1: 1280x720 (0x0500, 0x02D0)
+     */
+    var pkt_ss = new RtpPacket();
+    pkt_ss.payload = {
+        0x0A,
+        0x30,
+        0x02, 0x80, 0x01, 0x68,
+        0x05, 0x00, 0x02, 0xD0,
+        0xAA, 0xBB
+    };
+    var desc_ss = depack.parse_descriptor(pkt_ss);
+    assert(desc_ss != null);
+    assert(desc_ss.has_scalability_structure);
+    assert(desc_ss.num_spatial_layers == 2);
+    assert(desc_ss.layer_widths.get(0) == 640);
+    assert(desc_ss.layer_heights.get(0) == 360);
+    assert(desc_ss.layer_widths.get(1) == 1280);
+    assert(desc_ss.layer_heights.get(1) == 720);
+}
+
 void main(string[] args) {
     Test.init(ref args);
     Test.add_func("/solas/media/vp8_depacketizer", test_vp8_depacketizer_keyframe);
+    Test.add_func("/solas/media/vp9_depacketizer", test_vp9_depacketizer);
     Test.add_func("/solas/media/h264_depacketizer", test_h264_depacketizer);
     Test.add_func("/solas/media/opus_depacketizer", test_opus_depacketizer);
     Test.add_func("/solas/media/av1_depacketizer", test_av1_depacketizer);
