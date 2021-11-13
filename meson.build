@@ -107,6 +107,25 @@ solas_ice_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
 )
 
+# TURN Library (RFC 5766)
+turn_sources = files(
+  'src/protocol/turn/turn_types.vala',
+  'src/protocol/turn/turn_messages.vala',
+  'src/protocol/turn/turn_allocation.vala'
+)
+
+solas_turn_lib = static_library('solas_turn',
+  turn_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_stun_dep],
+  include_directories: solas_inc
+)
+
+solas_turn_dep = declare_dependency(
+  link_with: solas_turn_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_stun_dep]
+)
+
 # SDP library
 sdp_sources = files(
   'src/protocol/sdp/sdp_types.vala',
@@ -562,3 +581,11 @@ test_ice_full_exe = executable('test_ice_full',
   include_directories: solas_inc
 )
 test('test_ice_full', test_ice_full_exe)
+
+# Test TURN
+test_turn_exe = executable('test_turn',
+  'tests/test_turn.vala',
+  dependencies: [solas_turn_dep],
+  include_directories: solas_inc
+)
+test('test_turn', test_turn_exe)
