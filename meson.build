@@ -88,6 +88,25 @@ solas_stun_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
 )
 
+# ICE Full Library (RFC 8445)
+ice_sources = files(
+  'src/protocol/ice/ice_types.vala',
+  'src/protocol/ice/ice_candidate_pair.vala',
+  'src/protocol/ice/ice_checklist.vala'
+)
+
+solas_ice_lib = static_library('solas_ice',
+  ice_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+
+solas_ice_dep = declare_dependency(
+  link_with: solas_ice_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep]
+)
+
 # SDP library
 sdp_sources = files(
   'src/protocol/sdp/sdp_types.vala',
@@ -535,3 +554,11 @@ test_bench_exe = executable('test_bench',
   include_directories: solas_inc
 )
 test('test_bench', test_bench_exe)
+
+# Test ICE Full
+test_ice_full_exe = executable('test_ice_full',
+  'tests/test_ice_full.vala',
+  dependencies: [solas_ice_dep],
+  include_directories: solas_inc
+)
+test('test_ice_full', test_ice_full_exe)
