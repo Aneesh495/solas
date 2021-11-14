@@ -126,6 +126,26 @@ solas_turn_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_stun_dep]
 )
 
+# DTLS-SRTP Library (RFC 5764)
+dtls_sources = files(
+  'src/protocol/dtls/dtls_types.vala',
+  'src/protocol/dtls/dtls_record.vala',
+  'src/protocol/dtls/dtls_srtp_handshake.vala'
+)
+
+solas_dtls_lib = static_library('solas_dtls',
+  dtls_sources,
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep],
+  include_directories: solas_inc
+)
+
+solas_dtls_dep = declare_dependency(
+  link_with: solas_dtls_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
+)
+
 # SDP library
 sdp_sources = files(
   'src/protocol/sdp/sdp_types.vala',
@@ -589,3 +609,12 @@ test_turn_exe = executable('test_turn',
   include_directories: solas_inc
 )
 test('test_turn', test_turn_exe)
+
+# Test DTLS-SRTP
+test_dtls_srtp_exe = executable('test_dtls_srtp',
+  'tests/test_dtls_srtp.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_dtls_dep],
+  include_directories: solas_inc
+)
+test('test_dtls_srtp', test_dtls_srtp_exe)
