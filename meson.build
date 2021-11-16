@@ -337,6 +337,24 @@ solas_distribution_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep, solas_rtp_dep]
 )
 
+# Audio library
+audio_sources = files(
+  'src/engine/audio/resampler.vala',
+  'src/engine/audio/audio_mixer.vala'
+)
+
+solas_audio_lib = static_library('solas_audio',
+  audio_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+
+solas_audio_dep = declare_dependency(
+  link_with: solas_audio_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep]
+)
+
 # Network library
 network_sources = files(
   'src/network/protocol_demuxer.vala',
@@ -618,3 +636,11 @@ test_dtls_srtp_exe = executable('test_dtls_srtp',
   include_directories: solas_inc
 )
 test('test_dtls_srtp', test_dtls_srtp_exe)
+
+# Test Audio Mixer
+test_audio_mixer_exe = executable('test_audio_mixer',
+  'tests/test_audio_mixer.vala',
+  dependencies: [solas_audio_dep],
+  include_directories: solas_inc
+)
+test('test_audio_mixer', test_audio_mixer_exe)

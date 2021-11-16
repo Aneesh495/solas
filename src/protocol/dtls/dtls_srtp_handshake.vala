@@ -48,6 +48,7 @@ namespace Solas.Protocol.Dtls {
             out_writer.write_bytes(p1);
             out_writer.write_bytes(p2);
             uint8[] full_keystream = out_writer.to_array();
+            assert(full_keystream.length >= total_len);
 
             var mat = new SrtpKeyMaterial(key_len, salt_len);
             size_t offset = 0;
