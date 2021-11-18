@@ -146,6 +146,26 @@ solas_dtls_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
 )
 
+# SCTP & WebRTC DataChannel Library (RFC 4960 / RFC 8831 / RFC 8832)
+sctp_sources = files(
+  'src/protocol/sctp/sctp_types.vala',
+  'src/protocol/sctp/sctp_packet.vala',
+  'src/protocol/sctp/datachannel_session.vala'
+)
+
+solas_sctp_lib = static_library('solas_sctp',
+  sctp_sources,
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep],
+  include_directories: solas_inc
+)
+
+solas_sctp_dep = declare_dependency(
+  link_with: solas_sctp_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_crypto_dep]
+)
+
 # SDP library
 sdp_sources = files(
   'src/protocol/sdp/sdp_types.vala',
@@ -644,3 +664,12 @@ test_audio_mixer_exe = executable('test_audio_mixer',
   include_directories: solas_inc
 )
 test('test_audio_mixer', test_audio_mixer_exe)
+
+# Test DataChannel
+test_datachannel_exe = executable('test_datachannel',
+  'tests/test_datachannel.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_sctp_dep],
+  include_directories: solas_inc
+)
+test('test_datachannel', test_datachannel_exe)
