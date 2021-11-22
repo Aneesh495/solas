@@ -215,7 +215,8 @@ rtcp_sources = files(
   'src/protocol/rtcp/feedback_nack.vala',
   'src/protocol/rtcp/feedback_pli_fir.vala',
   'src/protocol/rtcp/feedback_remb.vala',
-  'src/protocol/rtcp/feedback_twcc.vala'
+  'src/protocol/rtcp/feedback_twcc.vala',
+  'src/protocol/rtcp/feedback_xr.vala'
 )
 
 solas_rtcp_lib = static_library('solas_rtcp',
@@ -673,3 +674,11 @@ test_datachannel_exe = executable('test_datachannel',
   include_directories: solas_inc
 )
 test('test_datachannel', test_datachannel_exe)
+
+# Test RTCP XR
+test_rtcp_xr_exe = executable('test_rtcp_xr',
+  'tests/test_rtcp_xr.vala',
+  dependencies: [solas_rtcp_dep],
+  include_directories: solas_inc
+)
+test('test_rtcp_xr', test_rtcp_xr_exe)

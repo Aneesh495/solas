@@ -13,7 +13,8 @@ namespace Solas.Protocol.Rtcp {
         GOODBYE = 203,
         APPLICATION = 204,
         TRANSPORT_FEEDBACK = 205,
-        PAYLOAD_FEEDBACK = 206
+        PAYLOAD_FEEDBACK = 206,
+        EXTENDED_REPORT = 207
     }
 
     public enum TransportFeedbackFormat {
