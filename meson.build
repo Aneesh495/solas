@@ -320,7 +320,8 @@ sfu_sources = files(
   'src/engine/sfu/active_speaker.vala',
   'src/engine/sfu/simulcast_router.vala',
   'src/engine/sfu/peer.vala',
-  'src/engine/sfu/room.vala'
+  'src/engine/sfu/room.vala',
+  'src/engine/sfu/layer_switcher.vala'
 )
 
 solas_sfu_lib = static_library('solas_sfu',
@@ -682,3 +683,11 @@ test_rtcp_xr_exe = executable('test_rtcp_xr',
   include_directories: solas_inc
 )
 test('test_rtcp_xr', test_rtcp_xr_exe)
+
+# Test Layer Switcher
+test_layer_switcher_exe = executable('test_layer_switcher',
+  'tests/test_layer_switcher.vala',
+  dependencies: [solas_sfu_dep],
+  include_directories: solas_inc
+)
+test('test_layer_switcher', test_layer_switcher_exe)
