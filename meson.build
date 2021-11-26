@@ -299,7 +299,8 @@ congestion_sources = files(
   'src/engine/congestion/aimd_rate_controller.vala',
   'src/engine/congestion/loss_controller.vala',
   'src/engine/congestion/bandwidth_estimator.vala',
-  'src/engine/congestion/pacer.vala'
+  'src/engine/congestion/pacer.vala',
+  'src/engine/congestion/probe_controller.vala'
 )
 
 solas_congestion_lib = static_library('solas_congestion',
@@ -691,3 +692,11 @@ test_layer_switcher_exe = executable('test_layer_switcher',
   include_directories: solas_inc
 )
 test('test_layer_switcher', test_layer_switcher_exe)
+
+# Test Probe Controller
+test_probe_controller_exe = executable('test_probe_controller',
+  'tests/test_probe_controller.vala',
+  dependencies: [solas_congestion_dep],
+  include_directories: solas_inc
+)
+test('test_probe_controller', test_probe_controller_exe)
