@@ -278,7 +278,8 @@ jitter_sources = files(
   'src/engine/jitter/packet_buffer.vala',
   'src/engine/jitter/playout_delay.vala',
   'src/engine/jitter/nack_queue.vala',
-  'src/engine/jitter/frame_assembler.vala'
+  'src/engine/jitter/frame_assembler.vala',
+  'src/engine/jitter/kalman_playout.vala'
 )
 
 solas_jitter_lib = static_library('solas_jitter',
@@ -700,3 +701,11 @@ test_probe_controller_exe = executable('test_probe_controller',
   include_directories: solas_inc
 )
 test('test_probe_controller', test_probe_controller_exe)
+
+# Test Kalman Playout
+test_kalman_playout_exe = executable('test_kalman_playout',
+  'tests/test_kalman_playout.vala',
+  dependencies: [solas_jitter_dep],
+  include_directories: solas_inc
+)
+test('test_kalman_playout', test_kalman_playout_exe)
