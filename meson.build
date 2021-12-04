@@ -379,6 +379,24 @@ solas_audio_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, m_dep, solas_core_dep]
 )
 
+# FlexFEC Library (RFC 8627)
+fec_sources = files(
+  'src/engine/fec/flexfec_packet.vala',
+  'src/engine/fec/flexfec_codec.vala'
+)
+
+solas_fec_lib = static_library('solas_fec',
+  fec_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_rtp_dep],
+  include_directories: solas_inc
+)
+
+solas_fec_dep = declare_dependency(
+  link_with: solas_fec_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_rtp_dep]
+)
+
 # Network library
 network_sources = files(
   'src/network/protocol_demuxer.vala',
@@ -709,3 +727,11 @@ test_kalman_playout_exe = executable('test_kalman_playout',
   include_directories: solas_inc
 )
 test('test_kalman_playout', test_kalman_playout_exe)
+
+# Test FlexFEC
+test_flexfec_exe = executable('test_flexfec',
+  'tests/test_flexfec.vala',
+  dependencies: [solas_fec_dep],
+  include_directories: solas_inc
+)
+test('test_flexfec', test_flexfec_exe)
