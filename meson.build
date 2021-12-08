@@ -346,7 +346,9 @@ solas_sfu_dep = declare_dependency(
 distribution_sources = files(
   'src/distribution/fmp4_boxes.vala',
   'src/distribution/segmenter.vala',
-  'src/distribution/hls_playlist.vala'
+  'src/distribution/hls_playlist.vala',
+  'src/distribution/mp4_writer.vala',
+  'src/distribution/recording_engine.vala'
 )
 
 solas_distribution_lib = static_library('solas_distribution',
@@ -735,3 +737,11 @@ test_flexfec_exe = executable('test_flexfec',
   include_directories: solas_inc
 )
 test('test_flexfec', test_flexfec_exe)
+
+# Test Recording
+test_recording_exe = executable('test_recording',
+  'tests/test_recording.vala',
+  dependencies: [solas_distribution_dep],
+  include_directories: solas_inc
+)
+test('test_recording', test_recording_exe)

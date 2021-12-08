@@ -105,7 +105,7 @@ namespace Solas.Distribution {
             tfdt_writer.write_zero_padding(3);
             tfdt_writer.write_uint64_be(base_decode_time);
             var tfdt_box = new Fmp4Box("tfdt", tfdt_writer.to_array());
-            traf_writer.write_bytes(tfhd_box.serialize());
+            traf_writer.write_bytes(tfdt_box.serialize());
 
             /* trun: track run */
             var trun_writer = new ByteWriter(32);
