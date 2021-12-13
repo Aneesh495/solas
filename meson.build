@@ -31,7 +31,8 @@ core_sources = files(
   'src/core/byte_writer.vala',
   'src/core/clock.vala',
   'src/core/stats.vala',
-  'src/core/logger.vala'
+  'src/core/logger.vala',
+  'src/core/metrics_collector.vala'
 )
 
 solas_core_lib = static_library('solas_core',
@@ -745,3 +746,11 @@ test_recording_exe = executable('test_recording',
   include_directories: solas_inc
 )
 test('test_recording', test_recording_exe)
+
+# Test Metrics Collector
+test_metrics_collector_exe = executable('test_metrics_collector',
+  'tests/test_metrics_collector.vala',
+  dependencies: [solas_core_dep],
+  include_directories: solas_inc
+)
+test('test_metrics_collector', test_metrics_collector_exe)
