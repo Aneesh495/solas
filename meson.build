@@ -400,6 +400,24 @@ solas_fec_dep = declare_dependency(
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_rtp_dep]
 )
 
+# SFU Cascade Cluster Library
+cluster_sources = files(
+  'src/cluster/mesh_node.vala',
+  'src/cluster/inter_sfu_router.vala'
+)
+
+solas_cluster_lib = static_library('solas_cluster',
+  cluster_sources,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_rtp_dep],
+  include_directories: solas_inc
+)
+
+solas_cluster_dep = declare_dependency(
+  link_with: solas_cluster_lib,
+  include_directories: solas_inc,
+  dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep, solas_rtp_dep]
+)
+
 # Network library
 network_sources = files(
   'src/network/protocol_demuxer.vala',
@@ -754,3 +772,11 @@ test_metrics_collector_exe = executable('test_metrics_collector',
   include_directories: solas_inc
 )
 test('test_metrics_collector', test_metrics_collector_exe)
+
+# Test Cluster Mesh
+test_cluster_mesh_exe = executable('test_cluster_mesh',
+  'tests/test_cluster_mesh.vala',
+  dependencies: [solas_cluster_dep],
+  include_directories: solas_inc
+)
+test('test_cluster_mesh', test_cluster_mesh_exe)
