@@ -425,7 +425,8 @@ network_sources = files(
   'src/network/metrics_exporter.vala',
   'src/network/static_web_assets.vala',
   'src/network/http_server.vala',
-  'src/network/udp_server.vala'
+  'src/network/udp_server.vala',
+  'src/network/whip_endpoint.vala'
 )
 
 solas_network_lib = static_library('solas_network',
@@ -780,3 +781,12 @@ test_cluster_mesh_exe = executable('test_cluster_mesh',
   include_directories: solas_inc
 )
 test('test_cluster_mesh', test_cluster_mesh_exe)
+
+# Test WHIP
+test_whip_exe = executable('test_whip',
+  'tests/test_whip.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_network_dep],
+  include_directories: solas_inc
+)
+test('test_whip', test_whip_exe)
