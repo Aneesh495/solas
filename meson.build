@@ -426,7 +426,8 @@ network_sources = files(
   'src/network/static_web_assets.vala',
   'src/network/http_server.vala',
   'src/network/udp_server.vala',
-  'src/network/whip_endpoint.vala'
+  'src/network/whip_endpoint.vala',
+  'src/network/whep_endpoint.vala'
 )
 
 solas_network_lib = static_library('solas_network',
@@ -790,3 +791,12 @@ test_whip_exe = executable('test_whip',
   include_directories: solas_inc
 )
 test('test_whip', test_whip_exe)
+
+# Test WHEP
+test_whep_exe = executable('test_whep',
+  'tests/test_whep.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_network_dep],
+  include_directories: solas_inc
+)
+test('test_whep', test_whep_exe)
