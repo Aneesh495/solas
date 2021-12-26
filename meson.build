@@ -57,7 +57,7 @@ solas_crypto_native_lib = static_library('solas_crypto_native',
 )
 
 solas_crypto_lib = static_library('solas_crypto',
-  'src/crypto/crypto.vala',
+  ['src/crypto/crypto.vala', 'src/crypto/sframe_cipher.vala'],
   vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
   link_with: [solas_crypto_native_lib],
   dependencies: [glib_dep, gobject_dep, gio_dep, gee_dep, solas_core_dep],
@@ -800,3 +800,12 @@ test_whep_exe = executable('test_whep',
   include_directories: solas_inc
 )
 test('test_whep', test_whep_exe)
+
+# Test SFrame
+test_sframe_exe = executable('test_sframe',
+  'tests/test_sframe.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_crypto_dep],
+  include_directories: solas_inc
+)
+test('test_sframe', test_sframe_exe)
