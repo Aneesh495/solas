@@ -427,7 +427,8 @@ network_sources = files(
   'src/network/http_server.vala',
   'src/network/udp_server.vala',
   'src/network/whip_endpoint.vala',
-  'src/network/whep_endpoint.vala'
+  'src/network/whep_endpoint.vala',
+  'src/network/qos_controller.vala'
 )
 
 solas_network_lib = static_library('solas_network',
@@ -809,3 +810,12 @@ test_sframe_exe = executable('test_sframe',
   include_directories: solas_inc
 )
 test('test_sframe', test_sframe_exe)
+
+# Test QoS
+test_qos_exe = executable('test_qos',
+  'tests/test_qos.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_network_dep],
+  include_directories: solas_inc
+)
+test('test_qos', test_qos_exe)
