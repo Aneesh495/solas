@@ -32,7 +32,8 @@ core_sources = files(
   'src/core/clock.vala',
   'src/core/stats.vala',
   'src/core/logger.vala',
-  'src/core/metrics_collector.vala'
+  'src/core/metrics_collector.vala',
+  'src/core/slab_allocator.vala'
 )
 
 solas_core_lib = static_library('solas_core',
@@ -819,3 +820,11 @@ test_qos_exe = executable('test_qos',
   include_directories: solas_inc
 )
 test('test_qos', test_qos_exe)
+
+# Test Slab Allocator
+test_slab_exe = executable('test_slab',
+  'tests/test_slab.vala',
+  dependencies: [solas_core_dep],
+  include_directories: solas_inc
+)
+test('test_slab', test_slab_exe)
