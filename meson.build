@@ -828,3 +828,12 @@ test_slab_exe = executable('test_slab',
   include_directories: solas_inc
 )
 test('test_slab', test_slab_exe)
+
+# Fuzz Test
+test_fuzz_exe = executable('test_fuzz',
+  'tests/fuzz_stun_rtp.vala',
+  vala_args: ['--vapidir=' + meson.current_source_dir() / 'src/crypto', '--pkg=solas_crypto'],
+  dependencies: [solas_stun_dep, solas_rtp_dep, solas_rtcp_dep, solas_crypto_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+test('test_fuzz', test_fuzz_exe)
