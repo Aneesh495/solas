@@ -837,3 +837,11 @@ test_fuzz_exe = executable('test_fuzz',
   include_directories: solas_inc
 )
 test('test_fuzz', test_fuzz_exe)
+
+# Test E2E Conference
+test_e2e_conference_exe = executable('test_e2e_conference',
+  'tests/test_e2e_conference.vala',
+  dependencies: [solas_sfu_dep, solas_audio_dep, solas_rtp_dep, solas_rtcp_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+test('test_e2e_conference', test_e2e_conference_exe)
