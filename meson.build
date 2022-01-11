@@ -845,3 +845,11 @@ test_e2e_conference_exe = executable('test_e2e_conference',
   include_directories: solas_inc
 )
 test('test_e2e_conference', test_e2e_conference_exe)
+
+# Benchmark Cascade Mesh
+bench_cascade_mesh_exe = executable('bench_cascade_mesh',
+  'tests/bench_cascade_mesh.vala',
+  dependencies: [solas_cluster_dep, solas_rtp_dep, solas_core_dep],
+  include_directories: solas_inc
+)
+test('bench_cascade_mesh', bench_cascade_mesh_exe)
