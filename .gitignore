@@ -12,3 +12,6 @@ compile_commands.json
 *.ts
 *.m3u8
 *.mp4
+
+__pycache__/
+*.pyc
