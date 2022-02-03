@@ -1,0 +1,23 @@
+{
+  "name": "@solas/webrtc-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for Solas WebRTC Selective Forwarding Unit",
+  "main": "dist/solas-sdk.js",
+  "types": "dist/solas-sdk.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "webrtc",
+    "sfu",
+    "simulcast",
+    "real-time",
+    "whip",
+    "whep"
+  ],
+  "author": "Solas Engine Maintainers",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
