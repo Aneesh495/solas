@@ -1,0 +1,56 @@
+services:
+  solas-origin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: solas:latest
+    container_name: solas-origin
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000/udp"
+      - "3478:3478/udp"
+    environment:
+      - SOLAS_NODE_ID=origin-core-1
+      - SOLAS_REGION=us-east-1
+      - SOLAS_HTTP_PORT=8080
+      - SOLAS_UDP_PORT=50000
+    networks:
+      - solas-mesh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  solas-edge-1:
+    image: solas:latest
+    container_name: solas-edge-1
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+      - "50001:50000/udp"
+    environment:
+      - SOLAS_NODE_ID=edge-eu-west-1
+      - SOLAS_REGION=eu-west-1
+      - SOLAS_CASCADE_ORIGIN=solas-origin:7000
+    depends_on:
+      solas-origin:
+        condition: service_healthy
+    networks:
+      - solas-mesh
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: solas-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - solas-mesh
+
+networks:
+  solas-mesh:
+    driver: bridge

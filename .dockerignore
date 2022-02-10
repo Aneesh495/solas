@@ -1,0 +1,13 @@
+build/
+subprojects/
+.git/
+.gitignore
+.DS_Store
+*.log
+*.pcap
+*.m3u8
+*.mp4
+__pycache__/
+*.pyc
+sdk/ts/dist/
+sdk/ts/node_modules/

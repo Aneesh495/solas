@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'solas-cluster'
+    static_configs:
+      - targets: ['solas-origin:8080', 'solas-edge-1:8080']
+        labels:
+          environment: 'production'
+          cluster: 'solas-global-mesh'
