@@ -114,6 +114,11 @@ namespace Solas.Network {
                 return new HttpResponse(200, "text/plain; version=0.0.4", metrics);
             }
 
+            if (req.path == "/api/v1/status") {
+                return new HttpResponse(200, "application/json",
+                    "{\"service\":\"solas\",\"version\":\"1.0.0\",\"rooms\":" + this.rooms.size.to_string() + "}");
+            }
+
             if (req.path == "/api/v1/rooms" && req.method == "GET") {
                 var sb = new StringBuilder();
                 sb.append("{\"rooms\":[");
@@ -121,7 +126,7 @@ namespace Solas.Network {
                 foreach (var r in this.rooms.values) {
                     if (idx > 0) sb.append(",");
                     sb.append_printf("{\"id\":\"%s\",\"peers\":%d,\"dominant_speaker\":\"%s\"}",
-                        r.room_id, r.peer_count, r.speaker_detector.dominant_speaker);
+                        r.room_id, r.peers.size, r.speaker_detector.dominant_speaker);
                     idx++;
                 }
                 sb.append("]}");
@@ -135,6 +140,65 @@ namespace Solas.Network {
             }
 
             return new HttpResponse(404, "application/json", "{\"error\":\"Not Found\"}");
+        }
+    }
+
+    public class HttpServer : Object {
+        private SocketService service;
+        private HttpRouter router;
+        public uint16 port { get; private set; }
+
+        public HttpServer(uint16 port, HttpRouter router) {
+            this.port = port;
+            this.router = router;
+            this.service = new SocketService();
+        }
+
+        public void start() throws GLib.Error {
+            this.service.add_inet_port(this.port, null);
+            this.service.incoming.connect((conn) => {
+                try {
+                    var in_stream = new DataInputStream(conn.get_input_stream());
+                    var out_stream = new DataOutputStream(conn.get_output_stream());
+
+                    var raw_sb = new StringBuilder();
+                    string? line;
+                    while ((line = in_stream.read_line(null)) != null) {
+                        string trimmed = line.strip();
+                        if (trimmed == "") break;
+                        raw_sb.append(trimmed);
+                        raw_sb.append("\r\n");
+                    }
+                    raw_sb.append("\r\n");
+
+                    var req = HttpRequest.parse(raw_sb.str);
+                    if (req != null) {
+                        if (req.headers.has_key("content-length")) {
+                            int content_len = int.parse(req.headers.get("content-length"));
+                            if (content_len > 0 && content_len < 1048576) {
+                                uint8[] body_buf = new uint8[content_len];
+                                size_t bytes_read;
+                                in_stream.read_all(body_buf, out bytes_read);
+                                req.body = (string) body_buf;
+                            }
+                        }
+                        var resp = this.router.handle_request(req);
+                        string serialized = resp.serialize();
+                        out_stream.put_string(serialized);
+                        out_stream.flush();
+                    }
+                    conn.close();
+                } catch (GLib.Error e) {
+                    // Ignore client disconnection
+                }
+                return true;
+            });
+            this.service.start();
+        }
+
+        public void stop() {
+            this.service.stop();
+            this.service.close();
         }
     }
 }

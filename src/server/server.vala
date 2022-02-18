@@ -19,6 +19,7 @@ namespace Solas.Server {
 
         public UdpServer udp_server { get; private set; }
         public HttpRouter http_router { get; private set; }
+        public HttpServer http_server { get; private set; }
         private MainLoop loop;
         private bool is_running;
 
@@ -28,6 +29,7 @@ namespace Solas.Server {
             this.sessions = new Gee.HashMap<string, SignalingSession>();
             this.udp_server = new UdpServer(this.config.udp_port);
             this.http_router = new HttpRouter(this.rooms);
+            this.http_server = new HttpServer(this.config.http_port, this.http_router);
             this.loop = new MainLoop();
             this.is_running = false;
 
@@ -47,6 +49,7 @@ namespace Solas.Server {
             Logger.info("SERVER", "UDP Media Port: %u", (uint) this.config.udp_port);
 
             this.udp_server.start();
+            this.http_server.start();
             this.is_running = true;
 
             Logger.info("SERVER", "Solas Media Engine successfully started and listening.");
@@ -58,6 +61,7 @@ namespace Solas.Server {
             Logger.info("SERVER", "Shutting down Solas Media Engine...");
             this.is_running = false;
             this.udp_server.stop();
+            this.http_server.stop();
 
             if (this.loop.is_running()) {
                 this.loop.quit();

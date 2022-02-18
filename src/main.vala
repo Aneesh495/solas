@@ -85,6 +85,7 @@ public class SolasDaemon : Object {
 
         try {
             server.start();
+            server.run();
         } catch (GLib.Error e) {
             printerr("Fatal server startup error: %s\n", e.message);
             return 1;
