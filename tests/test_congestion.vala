@@ -69,15 +69,15 @@ void test_pacer_priority_and_budget() {
 
     /* Audio must poll first due to highest priority */
     var p1 = pacer.poll_packet(t0);
-    assert(p1 != null && (string) p1.payload == "Audio");
+    assert(p1 == audio_pkt);
 
     /* Next must be Keyframe */
     var p2 = pacer.poll_packet(t0 + 5000);
-    assert(p2 != null && (string) p2.payload == "KeyVideoFrame");
+    assert(p2 == key_pkt);
 
     /* Next must be Delta */
     var p3 = pacer.poll_packet(t0 + 10000);
-    assert(p3 != null && (string) p3.payload == "DeltaVideoFrame");
+    assert(p3 == delta_pkt);
 
     assert(pacer.queued_packets == 0);
 }
